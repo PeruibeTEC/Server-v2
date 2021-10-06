@@ -1,7 +1,7 @@
-import Route from '@ioc:Adonis/Core/Route'
+import Route from '@ioc:Adonis/Core/Route';
 
 Route.group(() => {
   Route.group(() => {
-    Route.post('/', 'UsersController.create')
-  }).prefix('users')
-}).prefix('apiV2')
+    Route.post('/', 'UsersController.create');
+  }).prefix('users');
+}).prefix('apiV2');

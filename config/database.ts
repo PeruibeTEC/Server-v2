@@ -1,7 +1,7 @@
-import Env from '@ioc:Adonis/Core/Env'
-import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
+import Env from '@ioc:Adonis/Core/Env';
+import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database';
 
-let databaseConfig!: DatabaseConfig
+let databaseConfig!: DatabaseConfig;
 
 if (Env.get('NODE_ENV') === 'development') {
   databaseConfig = {
@@ -24,7 +24,7 @@ if (Env.get('NODE_ENV') === 'development') {
         debug: false,
       },
     },
-  }
+  };
 } else if (Env.get('NODE_ENV') === 'testing') {
   databaseConfig = {
     connection: Env.get('DB_CONNECTION'),
@@ -46,7 +46,7 @@ if (Env.get('NODE_ENV') === 'development') {
         debug: false,
       },
     },
-  }
+  };
 }
 
-export default databaseConfig
+export default databaseConfig;
