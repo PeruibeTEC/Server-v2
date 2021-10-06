@@ -10,6 +10,7 @@
     "dev": "node ace serve --watch",
     "tests": "node -r @adonisjs/assembler/build/register japaFile.ts",
     "coverage": "nyc npm run tests",
+    "coverage-html": "npx nyc report --reporter html --reporter text -t .nyc_output --report-dir .nyc_output/summary",
     "build": "node ace build --production",
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
