@@ -3,6 +3,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
 import User from 'App/Models/User';
 
 interface UserInterface {
+  id?: string;
   name: string;
   email: string;
   password?: string;
@@ -58,5 +59,19 @@ export default class UsersController {
     delete user.password;
 
     return response.status(201).send(user);
+  }
+
+  public async get({
+    request,
+    response,
+  }: HttpContextContract): Promise<Response | void> {
+    const { id } = request.params();
+
+    const user = await User.findBy('id', id);
+    if (!user) {
+      return response.status(400).send({ error: 'This user is not valid' });
+    }
+
+    return response.status(200).send(user);
   }
 }
