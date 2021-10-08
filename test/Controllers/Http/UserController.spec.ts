@@ -28,23 +28,35 @@ test.group('User', group => {
   const user2: UserInterface = {
     name: 'Henrique Martins',
     email: 'henrique@email.com',
-    password: 'passW0rd',
+    password: 'password123',
     is_tourist: false,
   };
 
-  group.after(async () => {
-    User.query().where('email', user.email).delete();
+  group.beforeEach(async () => {
+    await User.query().where('email', 'JohnDoe@email.com').delete();
+    await User.query().where('email', 'henrique@email.com').delete();
+  });
 
-    test('should return an error if the email is already registered', async assert => {
-      await supertest(BASE_URL).post('/users').send(user);
-      const response = await supertest(BASE_URL).post('/users').send(user);
+  test('should return created user', async assert => {
+    const response = await supertest(BASE_URL).post('/users').send(user);
 
-      assert.equal(response.statusCode, 400);
-      assert.equal(
-        JSON.stringify(response.body),
-        JSON.stringify({ error: 'This user is not valid' }),
-      );
-    });
+    delete user.password;
+
+    assert.containsAllDeepKeys(response.body, user);
+    assert.equal(response.statusCode, 201);
+
+    user.password = 'password123';
+  });
+
+  test('should return an error if the email is already registered', async assert => {
+    await supertest(BASE_URL).post('/users').send(user);
+    const response = await supertest(BASE_URL).post('/users').send(user);
+
+    assert.equal(response.statusCode, 400);
+    assert.equal(
+      JSON.stringify(response.body),
+      JSON.stringify({ error: 'This user is not valid' }),
+    );
   });
 
   test('should assign a default photo if the user doesnt pass any', async assert => {
@@ -75,17 +87,50 @@ test.group('User', group => {
       JSON.stringify(response.body),
       JSON.stringify({ error: 'This user is not valid' }),
     );
-    assert.equal(response.statusCode, 400);
+    assert.equal(response.statusCode, 404);
   });
 
   test('should return the users registered', async assert => {
+    await supertest(BASE_URL).post('/users').send(user);
+    await supertest(BASE_URL).post('/users').send(user2);
+
     const response = await supertest(BASE_URL).get('/users');
 
+    // @ts-expect-error we are deleting the email because it isn't returned in the method
+    delete user.email;
+    delete user.password;
     // @ts-expect-error we are deleting the email because it isn't returned in the method
     delete user2.email;
     delete user2.password;
 
-    assert.deepInclude(response.body[0], user2);
+    assert.deepInclude(response.body[0], user);
+    assert.deepInclude(response.body[1], user2);
     assert.equal(response.statusCode, 200);
+
+    user.email = 'JohnDoe@email.com';
+    user.password = 'password123';
+    user2.email = 'henrique@email.com';
+    user2.password = 'password123';
+  });
+
+  test('should deleted user', async assert => {
+    const userCreated = await supertest(BASE_URL).post('/users').send(user2);
+    const deleteResponse = await supertest(BASE_URL).delete(
+      `/users/${userCreated.body.id}`,
+    );
+
+    const getResponse = await supertest(BASE_URL).get(
+      `/users/${userCreated.body.id}`,
+    );
+
+    assert.equal(
+      JSON.stringify(deleteResponse.body),
+      JSON.stringify({ success: 'User deleted' }),
+    );
+    assert.equal(deleteResponse.statusCode, 200);
+    assert.equal(
+      JSON.stringify(getResponse.body),
+      JSON.stringify({ error: 'This user is not valid' }),
+    );
   });
 });

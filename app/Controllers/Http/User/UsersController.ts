@@ -11,6 +11,7 @@ interface UserInterface {
   background_photo?: string;
   small_biography?: string;
 }
+
 export default class UsersController {
   public async create({
     request,
@@ -32,6 +33,7 @@ export default class UsersController {
       'small_biography',
     ]);
     let { photo } = request.only(['photo']);
+
     const userVerify = await User.findBy('email', email);
     if (userVerify) {
       return response.status(400).send({ error: 'This user is not valid' });
@@ -40,6 +42,7 @@ export default class UsersController {
       photo =
         'https://peruibetec.blob.core.windows.net/user-images/default.jpg';
     }
+
     const user: UserInterface = await User.create({
       name,
       email,
@@ -49,6 +52,7 @@ export default class UsersController {
       background_photo,
       small_biography,
     });
+
     delete user.password;
     return response.status(201).send(user);
   }
@@ -60,7 +64,7 @@ export default class UsersController {
     const { id } = request.params();
     const user = await User.findBy('id', id);
     if (!user) {
-      return response.status(400).send({ error: 'This user is not valid' });
+      return response.status(404).send({ error: 'This user is not valid' });
     }
     return response.status(200).send(user);
   }
@@ -77,5 +81,16 @@ export default class UsersController {
     );
 
     return response.status(200).send(users);
+  }
+
+  public async delete({
+    request,
+    response,
+  }: HttpContextContract): Promise<Response | void> {
+    const { id } = request.params();
+
+    await User.query().where('id', id).delete();
+
+    return response.status(200).send({ success: 'User deleted' });
   }
 }
