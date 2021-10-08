@@ -77,4 +77,15 @@ test.group('User', group => {
     );
     assert.equal(response.statusCode, 400);
   });
+
+  test('should return the users registered', async assert => {
+    const response = await supertest(BASE_URL).get('/users');
+
+    // @ts-expect-error we are deleting the email because it isn't returned in the method
+    delete user2.email;
+    delete user2.password;
+
+    assert.deepInclude(response.body[0], user2);
+    assert.equal(response.statusCode, 200);
+  });
 });
