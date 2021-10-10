@@ -133,4 +133,38 @@ test.group('User', group => {
       JSON.stringify({ error: 'This user is not valid' }),
     );
   });
+
+  test('should updated user', async assert => {
+    const userCreated = await supertest(BASE_URL).post('/users').send(user);
+    const updateResponse = await supertest(BASE_URL)
+      .put(`/users/${userCreated.body.id}`)
+      .send(user2);
+
+    assert.equal(
+      JSON.stringify(updateResponse.body),
+      JSON.stringify({ success: 'User updated' }),
+    );
+    assert.equal(updateResponse.statusCode, 200);
+  });
+
+  test('should return errors when user is invalid', async assert => {
+    const userCreated = await supertest(BASE_URL).post('/users').send(user);
+
+    const updateResponse1 = await supertest(BASE_URL)
+      .put(`/users/${userCreated.body.id}`)
+      .send(user);
+    const updateResponse2 = await supertest(BASE_URL)
+      .put('/users/dc8e2d7b-36c1-4052-ae19-81201bcb6197')
+      .send(user2);
+
+    assert.equal(
+      JSON.stringify(updateResponse1.body),
+      JSON.stringify({ error: 'This user is not valid' }),
+    );
+    assert.equal(
+      JSON.stringify(updateResponse2.body),
+      JSON.stringify({ error: 'This user is not valid' }),
+    );
+    assert.equal(updateResponse1.statusCode, 400);
+  });
 });

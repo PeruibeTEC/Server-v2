@@ -93,4 +93,44 @@ export default class UsersController {
 
     return response.status(200).send({ success: 'User deleted' });
   }
+
+  public async update({
+    request,
+    response,
+  }: HttpContextContract): Promise<Response | void> {
+    const {
+      name,
+      email,
+      password,
+      is_tourist,
+      background_photo,
+      small_biography,
+    } = request.only([
+      'name',
+      'email',
+      'password',
+      'is_tourist',
+      'background_photo',
+      'small_biography',
+    ]);
+    const { id } = request.params();
+
+    const userVerifyEmail = await User.findBy('email', email);
+    const userVerifyId = await User.findBy('id', id);
+
+    if (userVerifyEmail || !userVerifyId) {
+      return response.status(400).send({ error: 'This user is not valid' });
+    }
+
+    await User.query().where('id', id).update({
+      name,
+      email,
+      password,
+      is_tourist,
+      background_photo,
+      small_biography,
+    });
+
+    return response.status(200).send({ success: 'User updated' });
+  }
 }
