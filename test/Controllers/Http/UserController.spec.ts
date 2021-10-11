@@ -16,7 +16,7 @@ interface UserInterface {
   small_biography?: string;
 }
 
-test.group('User', group => {
+test.group('UserController', group => {
   const user: UserInterface = {
     name: 'John Doe',
     email: 'JohnDoe@email.com',

@@ -8,4 +8,9 @@ Route.group(() => {
     Route.delete('/:id', 'User/UsersController.delete');
     Route.put('/:id', 'User/UsersController.update');
   }).prefix('users');
+
+  Route.group(() => {
+    Route.post('/login', 'AuthController.login');
+    Route.delete('/logout', 'AuthController.logout');
+  }).prefix('auth');
 }).prefix('apiV2');
