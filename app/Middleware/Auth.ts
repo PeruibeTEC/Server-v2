@@ -13,7 +13,7 @@ export default class AuthMiddleware {
   /**
    * The URL to redirect to when request is Unauthorized
    */
-  protected redirectTo = '/login';
+  protected redirectTo = '/auth/login';
 
   /**
    * Authenticates the current HTTP request against a custom set of defined
@@ -48,22 +48,6 @@ export default class AuthMiddleware {
         return true;
       }
     });
-
-    // FIXME: If the top block works, delete this commentary block
-
-    // for (const guard of guards) {
-    //   guardLastAttempted = guard;
-
-    //   if (await auth.use(guard).check()) {
-    //     /**
-    //      * Instruct auth to use the given guard as the default guard for
-    //      * the rest of the request, since the user authenticated
-    //      * succeeded here
-    //      */
-    //     auth.defaultGuard = guard;
-    //     return true;
-    //   }
-    // }
 
     /**
      * Unable to authenticate using any guard
