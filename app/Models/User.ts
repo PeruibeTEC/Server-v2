@@ -18,7 +18,7 @@ export default class User extends BaseModel {
     model.id = uuid();
   }
 
-  @column({ isPrimary: true })
+  @column()
   public name: string;
 
   @column()
