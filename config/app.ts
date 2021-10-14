@@ -1,12 +1,12 @@
-import proxyAddr from 'proxy-addr'
-import Env from '@ioc:Adonis/Core/Env'
+import proxyAddr from 'proxy-addr';
+import Env from '@ioc:Adonis/Core/Env';
 
-import { ServerConfig } from '@ioc:Adonis/Core/Server'
-import { LoggerConfig } from '@ioc:Adonis/Core/Logger'
-import { ProfilerConfig } from '@ioc:Adonis/Core/Profiler'
-import { ValidatorConfig } from '@ioc:Adonis/Core/Validator'
+import { ServerConfig } from '@ioc:Adonis/Core/Server';
+import { LoggerConfig } from '@ioc:Adonis/Core/Logger';
+import { ProfilerConfig } from '@ioc:Adonis/Core/Profiler';
+import { ValidatorConfig } from '@ioc:Adonis/Core/Validator';
 
-export const appKey: string = Env.get('APP_KEY')
+export const appKey: string = Env.get('APP_KEY');
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +39,7 @@ export const http: ServerConfig = {
   },
 
   forceContentNegotiationTo: 'application/json',
-}
+};
 
 export const logger: LoggerConfig = {
   name: Env.get('APP_NAME'),
@@ -47,13 +47,13 @@ export const logger: LoggerConfig = {
 
   level: Env.get('LOG_LEVEL', 'info'),
   prettyPrint: Env.get('NODE_ENV') === 'development',
-}
+};
 
 export const profiler: ProfilerConfig = {
   enabled: true,
 
   blacklist: [],
   whitelist: [],
-}
+};
 
-export const validator: ValidatorConfig = {}
+export const validator: ValidatorConfig = {};
