@@ -84,20 +84,23 @@ export default class UsersController {
   }
 
   public async delete({
-    request,
+    auth,
     response,
   }: HttpContextContract): Promise<Response | void> {
-    const { id } = request.params();
+    const authId = await auth.use('api').authenticate();
 
-    await User.query().where('id', id).delete();
+    await User.query().where('id', authId.id).delete();
 
     return response.status(200).send({ success: 'User deleted' });
   }
 
   public async update({
+    auth,
     request,
     response,
   }: HttpContextContract): Promise<Response | void> {
+    const authId = await auth.use('api').authenticate();
+
     const {
       name,
       email,
@@ -113,16 +116,14 @@ export default class UsersController {
       'background_photo',
       'small_biography',
     ]);
-    const { id } = request.params();
 
     const userVerifyEmail = await User.findBy('email', email);
-    const userVerifyId = await User.findBy('id', id);
 
-    if (userVerifyEmail || !userVerifyId) {
+    if (userVerifyEmail) {
       return response.status(400).send({ error: 'This user is not valid' });
     }
 
-    await User.query().where('id', id).update({
+    await User.query().where('id', authId.id).update({
       name,
       email,
       password,

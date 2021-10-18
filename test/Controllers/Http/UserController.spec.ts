@@ -16,7 +16,7 @@ interface UserInterface {
   small_biography?: string;
 }
 
-test.group('User', group => {
+test.group('UserController', group => {
   const user: UserInterface = {
     name: 'John Doe',
     email: 'JohnDoe@email.com',
@@ -115,9 +115,13 @@ test.group('User', group => {
 
   test('should deleted user', async assert => {
     const userCreated = await supertest(BASE_URL).post('/users').send(user2);
-    const deleteResponse = await supertest(BASE_URL).delete(
-      `/users/${userCreated.body.id}`,
-    );
+    const authId = await supertest(BASE_URL)
+      .post('/auth/login')
+      .send({ email: user2.email, password: user2.password });
+
+    const deleteResponse = await supertest(BASE_URL)
+      .delete('/users')
+      .auth(authId.body.token, { type: authId.body.type });
 
     const getResponse = await supertest(BASE_URL).get(
       `/users/${userCreated.body.id}`,
@@ -135,9 +139,14 @@ test.group('User', group => {
   });
 
   test('should updated user', async assert => {
-    const userCreated = await supertest(BASE_URL).post('/users').send(user);
+    await supertest(BASE_URL).post('/users').send(user);
+    const authId = await supertest(BASE_URL)
+      .post('/auth/login')
+      .send({ email: user.email, password: user.password });
+
     const updateResponse = await supertest(BASE_URL)
-      .put(`/users/${userCreated.body.id}`)
+      .put('/users')
+      .auth(authId.body.token, { type: authId.body.type })
       .send(user2);
 
     assert.equal(
@@ -147,22 +156,19 @@ test.group('User', group => {
     assert.equal(updateResponse.statusCode, 200);
   });
 
-  test('should return errors when user is invalid', async assert => {
-    const userCreated = await supertest(BASE_URL).post('/users').send(user);
+  test('should return errors when user updated is invalid', async assert => {
+    await supertest(BASE_URL).post('/users').send(user);
+    const authId = await supertest(BASE_URL)
+      .post('/auth/login')
+      .send({ email: user.email, password: user.password });
 
     const updateResponse1 = await supertest(BASE_URL)
-      .put(`/users/${userCreated.body.id}`)
+      .put('/users')
+      .auth(authId.body.token, { type: authId.body.type })
       .send(user);
-    const updateResponse2 = await supertest(BASE_URL)
-      .put('/users/dc8e2d7b-36c1-4052-ae19-81201bcb6197')
-      .send(user2);
 
     assert.equal(
       JSON.stringify(updateResponse1.body),
-      JSON.stringify({ error: 'This user is not valid' }),
-    );
-    assert.equal(
-      JSON.stringify(updateResponse2.body),
       JSON.stringify({ error: 'This user is not valid' }),
     );
     assert.equal(updateResponse1.statusCode, 400);
