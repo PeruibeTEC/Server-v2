@@ -21,6 +21,3 @@ export default class BusinessType extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime;
 }
-function uuid(): number {
-  throw new Error('Function not implemented.');
-}
