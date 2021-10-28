@@ -1,3 +1,5 @@
+import { inject } from '@adonisjs/core/build/standalone';
+
 import nodemailer, { Transporter } from 'nodemailer';
 import aws from 'aws-sdk';
 
@@ -5,6 +7,7 @@ import MailTemplateProvider from '../MailTemplate/Model/MailTemplateProvider';
 import MailProvider from './Model/MailProvider';
 import SendMailDTO from './dtos/SendMailDTO';
 
+@inject(['Providers/MailTemplateProvider'])
 export default class AmazonSESMailProvider implements MailProvider {
   private client: Transporter;
 
