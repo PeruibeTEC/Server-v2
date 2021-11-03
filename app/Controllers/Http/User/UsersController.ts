@@ -1,5 +1,10 @@
+import { inject } from '@adonisjs/core/build/standalone';
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
+
 import User from 'App/Models/User';
+
+import path from 'path';
+import MailProvider from '../../../../providers/Mail/AmazonSES/Model/MailProvider';
 
 interface UserInterface {
   id?: string;
@@ -11,8 +16,10 @@ interface UserInterface {
   background_photo?: string;
   small_biography?: string;
 }
-
+@inject(['Providers/AmazonSES'])
 export default class UsersController {
+  constructor(private mailProvider: MailProvider) {}
+
   public async create({
     request,
     response,
@@ -51,6 +58,22 @@ export default class UsersController {
       photo,
       background_photo,
       small_biography,
+    });
+
+    const welcomeTemplate = path.resolve(__dirname, 'view', 'welcome.hbs');
+
+    await this.mailProvider.sendMail({
+      to: {
+        name: user.name,
+        email: user.email,
+      },
+      subject: '[PeruibeTec]: Seja Bem-vindo',
+      templateData: {
+        file: welcomeTemplate,
+        variables: {
+          name: user.name,
+        },
+      },
     });
 
     delete user.password;

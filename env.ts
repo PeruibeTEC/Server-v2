@@ -21,4 +21,8 @@ export default Env.rules({
   APP_NAME: Env.schema.string(),
   DRIVE_DISK: Env.schema.enum(['local'] as const),
   NODE_ENV: Env.schema.enum(['development', 'production', 'testing'] as const),
+
+  AWS_ACCESS_KEY_ID: Env.schema.string(),
+  AWS_SECRET_ACCESS_KEY: Env.schema.string(),
+  AWS_DEFAULT_REGIONS: Env.schema.string(),
 });
